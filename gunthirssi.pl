@@ -28,9 +28,9 @@ $VERSION = "0.1";
         license     => 'ISC'
 );
 
-my %cmds = {
-        "pause" => 'hgd_pause'
-};
+my %cmds = (
+        "pause" => \&hgd_pause,
+);
 
 # Usage: /hgd pause|ls|vo
 sub cmd_hgd {
@@ -40,7 +40,7 @@ sub cmd_hgd {
         # witem - active window
         my ($args, $server, $win) = @_;
 
-        my @data = split($args);
+        my @data = split(' ', $args);
         Irssi::print($args);
 
         if (!$server) {
@@ -53,7 +53,7 @@ sub cmd_hgd {
                 return;
         }
 
-        for (keys(%cmds)) {
+        foreach (keys %cmds) {
                 Irssi::print($_);
                 if ($_ eq @data[0]) {
                         $cmds{$_}($server, $win);
