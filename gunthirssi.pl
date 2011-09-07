@@ -24,24 +24,26 @@ $VERSION = "0.1";
         authors     => 'Edd Barrett, Robert Bronsdon',
         contact     => 'vext01@gmail.com',
         name        => 'gunthirssi',
-        description => 'Control a HGD from your existing IRC session',
+        description => 'Control HGD from IRSSI',
         license     => 'ISC'
 );
 
 my %cmds = (
+        "ls" => \&hgd_ls,
+        "np" => \&hgd_np,
         "pause" => \&hgd_pause,
+        "skip" => \&hgd_skip,
+        "vo" => \&hgd_vo,
 );
 
 # Usage: /hgd pause|ls|vo
 sub cmd_hgd {
-        #global %cmds;
         # data - parameters
         # server - active server
         # witem - active window
         my ($args, $server, $win) = @_;
 
         my @data = split(' ', $args);
-        Irssi::print($args);
 
         if (!$server) {
                 Irssi::print("No server");
@@ -54,7 +56,6 @@ sub cmd_hgd {
         }
 
         foreach (keys %cmds) {
-                Irssi::print($_);
                 if ($_ eq @data[0]) {
                         $cmds{$_}($server, $win);
                         return 0;
@@ -66,8 +67,34 @@ sub cmd_hgd {
 
 sub hgd_pause {
         my ($server, $win) = @_;
-        #$server->command("EXEC hgd-admin pause");
-        hgd_msg($win, "toggle paused");
+	# this will eventually be a client command
+        $server->command("EXEC hgd-admin pause");
+        hgd_msg($win, "Toggle pause");
+}
+
+sub hgd_skip {
+        my ($server, $win) = @_;
+	# this will eventually be a client command
+        $server->command("EXEC hgd-admin skip");
+        hgd_msg($win, "Skipped track");
+}
+
+sub hgd_np {
+        my ($server, $win) = @_;
+        hgd_msg($win, "Now playing:");
+        $server->command("EXEC hgdc np");
+}
+
+sub hgd_ls {
+        my ($server, $win) = @_;
+        hgd_msg($win, "Playlist:");
+	$server->command("EXEC hgdc ls");
+}
+
+sub hgd_vo {
+        my ($server, $win) = @_;
+        $server->command("EXEC hgdc vo");
+        hgd_msg($win, "Sent vote off");
 }
 
 sub hgd_msg {
