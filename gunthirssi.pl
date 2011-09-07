@@ -13,61 +13,71 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-
 use strict;
 
-package hgd;
+use Irssi;
+
+use vars qw($VERSION %IRSSI);
+
+$VERSION = "0.1";
+%IRSSI = (
+        authors     => 'Edd Barrett, Robert Bronsdon',
+        contact     => 'vext01@gmail.com',
+        name        => 'gunthirssi',
+        description => 'Control a HGD from your existing IRC session',
+        license     => 'ISC'
+);
 
 my %cmds = {
-	"pause" => hgd_pause
+        "pause" => 'hgd_pause'
 };
 
 # Usage: /hgd pause|ls|vo
 sub cmd_hgd {
-	#global %cmds;
-	# data - parameters
-	# server - active server
-	# witem - active window
-	my ($args, $server, $win) = @_;
+        #global %cmds;
+        # data - parameters
+        # server - active server
+        # witem - active window
+        my ($args, $server, $win) = @_;
 
-	my @data = split($args);
-	Irssi::print($args);
+        my @data = split($args);
+        Irssi::print($args);
 
-	if (!$server) {
-		Irssi::print("No server");
-		return;
-	}
+        if (!$server) {
+                Irssi::print("No server");
+                return;
+        }
 
-	if (!@data) {
-		Irssi::print("Bad usage");
-		return;
-	}
+        if (!@data) {
+                Irssi::print("Bad usage");
+                return;
+        }
 
-	for (keys(%cmds)) {
-		Irssi::print($_);
-		if ($_ eq @data[0]) {
-			$cmds{$_}($server, $win);
-			return 0;
-		}
-	}
+        for (keys(%cmds)) {
+                Irssi::print($_);
+                if ($_ eq @data[0]) {
+                        $cmds{$_}($server, $win);
+                        return 0;
+                }
+        }
 
-	hgd_msg($win, "command not found");
+        hgd_msg($win, "command not found");
 }
 
 sub hgd_pause {
-	my ($server, $win) = @_;
-	#$server->command("EXEC hgd-admin pause");
-	hgd_msg($win, "toggle paused");
+        my ($server, $win) = @_;
+        #$server->command("EXEC hgd-admin pause");
+        hgd_msg($win, "toggle paused");
 }
 
 sub hgd_msg {
-	my ($win, $msg) = @_;
+        my ($win, $msg) = @_;
 
-	if ($win) {
-		$win->print("HGD >> " . $msg);
-	} else {
-		Irssi::print("HGD >> " . $msg);
-	}
+        if ($win) {
+                $win->print("HGD >> " . $msg);
+        } else {
+                Irssi::print("HGD >> " . $msg);
+        }
 }
 
 Irssi::command_bind('hgd', 'cmd_hgd');
